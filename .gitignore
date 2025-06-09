@@ -2,4 +2,5 @@
 .virtual_documents/
 anaconda_projects/
 template_path/
+output_path/
 *.ipynb
