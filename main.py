@@ -23,7 +23,7 @@ def create_calendar_slide(presentaion_template):
 @app.route('/capitalization-slide')
 def download_ppt_capitalization():
     pythoncom.CoInitialize()
-    template_path = os.path.join(os.getcwd(), r"template_path\MorganStanley-SampleTemplate.pptx")
+    template_path = os.path.join(os.getcwd(), r"template_path\SampleTemplate.pptx")
     presentation = create_ppt_with_template(template_path)
     output_path = create_capitalization_slide(presentation)
     pythoncom.CoUninitialize()
@@ -33,7 +33,7 @@ def download_ppt_capitalization():
 @app.route('/calendar-slide')
 def download_ppt_calendar():
     pythoncom.CoInitialize()
-    template_path = os.path.join(os.getcwd(), r"template_path\MorganStanley-SampleTemplate.pptx")
+    template_path = os.path.join(os.getcwd(), r"template_path\SampleTemplate.pptx")
     presentation = create_ppt_with_template(template_path)
     output_path = create_calendar_slide(presentation)
     pythoncom.CoUninitialize()
