@@ -3,11 +3,11 @@ import calendar
 from helpers.helper_files import get_calendar_lookup, check_for_events
 from datetime import datetime
 
-def create_calendar_svg(svg_path):
+def create_calendar_svg(filename):
     # Increased width further to ensure no clipping
     canvas_width = 1180  # Fix for right-side border cutoff
     canvas_height = 750
-    dwg = svgwrite.Drawing(svg_path, profile='tiny', size=(f"{canvas_width}px", f"{canvas_height}px"))
+    dwg = svgwrite.Drawing(filename, profile='tiny', size=(f"{canvas_width}px", f"{canvas_height}px"))
 
     months = ["March", "April", "May", "June", "July", "August"]
     year = 2025
@@ -88,8 +88,9 @@ def create_calendar_svg(svg_path):
                 row += 1
 
     dwg.save()
-    print(f"✅ Calendar saved to: {svg_path}")
+    print(f"✅ Calendar saved to: {filename}")
 
 
 # Generate SVG
-create_calendar_svg("calendar_march_to_august_2025.svg")
+if __name__ == "__main__":
+    create_calendar_svg("calendar_march_to_august_2025.svg")

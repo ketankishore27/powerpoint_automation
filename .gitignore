@@ -4,3 +4,5 @@ anaconda_projects/
 template_path/
 output_path/
 *.ipynb
+*.pyc
+__pycache__/

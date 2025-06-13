@@ -68,17 +68,6 @@ def create_current_captiatlization_helper(presentation_sample):
     print("✅ Capitalisation Slides Done.")
     return output_file_path
 
-def get_calendar_lookup():
-    lookup_df = pd.read_excel("data/events_data.xlsx")
-    lookup_df["Date"] = lookup_df["Date"].apply(lambda x: str(datetime.date(x)))
-    lookup_dict = {}
-    for date, event in lookup_df.values:
-        try:
-            lookup_dict[event].append(date)
-        except Exception as e:
-            lookup_dict[event] = []
-    return lookup_dict
-
 
 def get_calendar_lookup():
     lookup_df = pd.read_excel("data/events_data.xlsx")
