@@ -3,13 +3,13 @@ import calendar
 from helpers.helper_files import get_calendar_lookup, check_for_events
 from datetime import datetime
 
-def create_calendar_svg(filename):
+def create_calendar_svg(filename, start_date = "2025-06-01"):
     # Increased width further to ensure no clipping
     canvas_width = 1180  # Fix for right-side border cutoff
     canvas_height = 750
     dwg = svgwrite.Drawing(filename, profile='tiny', size=(f"{canvas_width}px", f"{canvas_height}px"))
 
-    months = ["March", "April", "May", "June", "July", "August"]
+    months = ["June", "July", "August", "September", "October", "November"]
     year = 2025
     colors = {
         "execution": (217, 217, 217),  # Light grey
@@ -28,64 +28,65 @@ def create_calendar_svg(filename):
 
     
     for idx, month_name in enumerate(months):
-        month = idx + 3
-        cal = calendar.Calendar(firstweekday=0)
-        month_days = list(cal.itermonthdays(year, month))
+        month = idx + 6  # June is month 6
 
+        # Create calendar with Monday as the first weekday
+        cal = calendar.Calendar(firstweekday=0)
+        month_weeks = cal.monthdayscalendar(year, month)
+
+        # Determine grid position
         grid_col = idx % 3
         grid_row = idx // 3
 
         x_offset = grid_col * (cell_width * 7 + x_margin)
         y_offset = top_extra_margin + grid_row * (cell_height * 7 + y_margin + 35)
 
-        # Month title
+        # Add month title
         dwg.add(dwg.text(f"{month_name} {year}",
                          insert=(x_offset, y_offset - 15),
                          font_size="13px", font_weight="bold"))
 
-        # Weekday headers
+        # Add weekday headers (aligned with firstweekday=0, i.e., Monday)
         weekdays = ["M", "T", "W", "Th", "F", "Sa", "Su"]
         for i, day in enumerate(weekdays):
             dwg.add(dwg.text(day,
                              insert=(x_offset + i * cell_width + 3, y_offset + 10),
                              font_size="9px", font_weight="bold"))
 
-        # Calendar day boxes
-        col = 0
-        row = 1
-        key = None
-        for day in month_days:
-            if day == 0:
-                col += 1
-                if col >= 7:
-                    col = 0
-                    row += 1
-                continue
+        ## Replace code start
+        for row_idx, week in enumerate(month_weeks):
+            for col, day in enumerate(week):
+                if day == 0:
+                    continue  # skip padding days outside this month
 
-            rect_x = x_offset + col * cell_width
-            rect_y = y_offset + row * cell_height
+                # Calculate position
+                rect_x = x_offset + col * cell_width
+                rect_y = y_offset + (row_idx + 1) * cell_height  # +1 for header row
 
-            dwg.add(dwg.rect(insert=(rect_x, rect_y),
-                             size=(cell_width, cell_height),
-                             fill="#e0f7fa", stroke="gray", stroke_width=stroke_width))
+                # Draw the cell rectangle
+                dwg.add(dwg.rect(insert=(rect_x, rect_y),
+                                 size=(cell_width, cell_height),
+                                 fill="#e0f7fa", stroke="gray", stroke_width=stroke_width))
 
-            date_field = f"{day}-{month_name}-{year}"
-            date_obj = datetime.strptime(date_field, '%d-%B-%Y')
-            formatted_date = date_obj.strftime('%Y-%m-%d')
-            key = check_for_events(sample_date=formatted_date, lookup_dictionary=get_calendar_lookup())
-            if key:
-                dwg.add(dwg.text(str(day) + "\n" + key,
+                # Format date and check for event labels
+                date_field = f"{day}-{month_name}-{year}"
+                try:
+                    date_obj = datetime.strptime(date_field, '%d-%B-%Y')
+                except ValueError:
+                    continue
+
+                formatted_date = date_obj.strftime('%Y-%m-%d')
+                key = check_for_events(sample_date=formatted_date, lookup_dictionary=lookup_calendar)
+
+                # Prepare label (day + optional event)
+                label = str(day) + ("\n" + key if key else "")
+
+                # Draw the text
+                dwg.add(dwg.text(label,
                                  insert=(rect_x + 3, rect_y + 13),
                                  font_size="8px"))
-            else:
-                dwg.add(dwg.text(str(day),
-                                 insert=(rect_x + 3, rect_y + 13),
-                                 font_size="8px"))
-
-            col += 1
-            if col >= 7:
-                col = 0
-                row += 1
+            
+        ## Replace code end
 
     dwg.save()
     print(f"✅ Calendar saved to: {filename}")
