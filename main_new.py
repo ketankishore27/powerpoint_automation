@@ -39,9 +39,10 @@ def calendar_svg_source():
     with open(output_path, "r") as fo:
         source_code = fo.read()
     
-    return jsonify({
+    response_obj = jsonify({
         "source_code": source_code
     })
+    return source_code
 
 
 
